@@ -1,8 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Xml.Linq;
 using Robust.Shared.IoC;
 using Robust.Shared.Prototypes;
+using Robust.Shared.Serialization.Manager.Attributes;
 
 namespace Robust.Shared.GameObjects;
 
@@ -80,6 +83,19 @@ internal sealed class PrototypeReloadSystem : EntitySystem
             var component = (Component)_componentFactory.GetComponent(name);
             component.Owner = entity;
             EntityManager.AddComponent(entity, component);
+        }
+        
+        var RequiredComponents = new List<string>();
+        foreach (var i in newPrototype.Components.Values)
+        {
+            var properties = typeof(i.Component).GetProperties();
+            properties.GetCustomAttribute<RequireComponentAttribute>();
+               
+        }
+        foreach (var name in RequiredComponents)
+        {
+            if(newPrototype.Components.Keys.Contains(name))
+                continue
         }
 
         // Update entity metadata
